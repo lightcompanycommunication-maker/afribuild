@@ -6,7 +6,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
    Design system complet · Responsive PC / tablette / mobile · Déployable.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const MODEL = "claude-sonnet-4-5-20250929";
+const MODEL = "claude-haiku-4-5-20251001";
 
 // ─── CONFIG (remplace par tes clés en production) ───────────────────────────
 const SUPABASE_URL    = "https://TON_PROJECT.supabase.co";

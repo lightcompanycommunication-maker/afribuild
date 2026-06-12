@@ -5,7 +5,7 @@ import { config } from "../config.js";
  * La clé reste secrète ici ; le front n'appelle jamais Anthropic directement.
  */
 
-const DEFAULT_MODEL = "claude-sonnet-4-5-20250929";
+const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
 
 // Mapping de tous les anciens noms vers les modèles réellement disponibles
 const MODEL_MAP = {
@@ -45,7 +45,12 @@ export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, mode
 
   const data = await res.json();
   const raw = data.content?.map((b) => b.text || "").join("") || "";
-  const clean = raw.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+  const clean = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
   const match = clean.match(/\{[\s\S]*\}/);
-  return JSON.parse(match ? match[0] : clean);
+  const jsonStr = match ? match[0] : clean;
+  try {
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    throw new Error(`La réponse du modèle n'est pas du JSON valide. Réessaie. (détail: ${e.message})`);
+  }
 }
