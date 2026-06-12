@@ -583,6 +583,19 @@ INTERDITS (signes d’IA): emojis dans titres, dégradés criards, border-radius
 OBLIGATOIRES (dev senior): sidebar navigation réelle, typo -apple-system hiérarchisée (28/20/15/13px), espacement multiples de 4px, données denses (10-15 entrées, vrais noms africains), palette limitée (1 primaire + grays), tables zebra + hover, formulaires avec focus states, monnaie formatée (1 450 000 FCFA), min 3 vues navigables.
 PALETTES: Fintech #0F172A+#22C55E | Santé #FFF+#0EA5E9 | Éducation #FFF+#7C3AED | Transport #FFF+#EA580C | Restaurant #1C1917+#EF4444 | Immobilier #FFF+#0891B2.`;
 
+const HAIKU_SYSTEM_PROMPT = `Tu es un développeur React senior. Tu génères des applications web fonctionnelles et propres.
+
+LOI ABSOLUE: JSON uniquement, zéro texte, zéro backtick en dehors du JSON.
+FORMAT: {"title","description","tagline","features":["..."],"stack":["..."],"africanContext","agentLogs":{"planner","design","frontend","backend","qa"},"code":"...JSX export default App"}
+
+RÈGLES:
+- Une seule vue principale bien faite (pas de router complexe, utilise useState pour la navigation)
+- Données réalistes (5-8 entrées max, prénoms africains)
+- Palette 2 couleurs max, styles inline uniquement
+- Code compact et lisible, pas de bibliothèques externes
+- Monnaie FCFA formatée`;
+
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PRIMITIVES
@@ -1717,14 +1730,14 @@ export default function App() {
     if((user?.credits||0)<ACTION_COST.generate){setNoCreditsFor({action:"generate",cost:ACTION_COST.generate});return;}
     setPhase("generating");setResult(null);setLiveCode(null);setError("");setTab("preview");setAgentLogs(null);setPreviewError(null);setFullstack(null);setAutoFixAttempts(0);
     try{
-      const sys=genMode==="fullstack"?FULLSTACK_SYSTEM_PROMPT:genMode==="mobile"?MOBILE_SYSTEM_PROMPT:SYSTEM_PROMPT;
+      const planModel=AI_MODELS.find(m=>m.id===selectedModel)?.model||AI_TIERS[planData?.ai||"balanced"]?.id||MODEL;
+      const isFast=planModel.includes("haiku");
+      const sys=isFast?HAIKU_SYSTEM_PROMPT:genMode==="fullstack"?FULLSTACK_SYSTEM_PROMPT:genMode==="mobile"?MOBILE_SYSTEM_PROMPT:SYSTEM_PROMPT;
       const ctx=selectedAgent?`\n\nAGENT SPÉCIALISÉ: ${selectedAgent.systemPrompt}`:"";
       const africa=buildAfricaExpertContext(p);
       const mem=projectMemory?`\n\nMÉMOIRE DU PROJET (garde la cohérence):\n${projectMemory.summary||""}${(projectMemory.history||[]).slice(-3).map(h=>"\n- "+h).join("")}`:"";
-      const planModel=AI_MODELS.find(m=>m.id===selectedModel)?.model||AI_TIERS[planData?.ai||"balanced"]?.id||MODEL;
-      const isFast=planModel.includes("haiku");
       const extras=isFast?"":ADMIN_PANEL_DIRECTIVE+BUSINESS_DIRECTIVE+RECEIPT_DIRECTIVE+VISUAL_DIRECTIVE+DOC_DIRECTIVE;
-      const raw=await callAI(planModel,sys,`Génère une app PROFESSIONNELLE indistinguable d’une équipe senior. Min 3 vues, données africaines denses, vraies interactions.\n\n${p}${ctx}${africa}${mem}${extras}`,isFast?6000:genMode==="fullstack"?8000:7000);
+      const raw=await callAI(planModel,sys,`${isFast?"Génère une app fonctionnelle et propre, code compact.":"Génère une app PROFESSIONNELLE indistinguable d’une équipe senior. Min 3 vues, données africaines denses, vraies interactions."}\n\n${p}${ctx}${africa}${mem}${extras}`,isFast?6000:genMode==="fullstack"?8000:7000);
       const clean=raw.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
       const parsed=JSON.parse(clean.match(/\{[\s\S]*\}/)?.[0]||clean);
       if(genMode==="fullstack"){if(!parsed.frontend)throw new Error("Pas de frontend généré.");setFullstack(parsed);parsed.code=parsed.frontend;}
