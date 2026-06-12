@@ -44,6 +44,11 @@ export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, mode
   if (!res.ok) throw new Error(`Anthropic: ${await res.text()}`);
 
   const data = await res.json();
+
+  if (data.stop_reason === "max_tokens") {
+    throw new Error("L'application demandée est trop complexe pour être générée en une fois. Essaie une description plus courte ou plus ciblée (ex: 'une caisse simple' plutôt que 'un système POS complet avec admin').");
+  }
+
   const raw = data.content?.map((b) => b.text || "").join("") || "";
   const clean = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
   const match = clean.match(/\{[\s\S]*\}/);
@@ -51,6 +56,6 @@ export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, mode
   try {
     return JSON.parse(jsonStr);
   } catch (e) {
-    throw new Error(`La réponse du modèle n'est pas du JSON valide. Réessaie. (détail: ${e.message})`);
+    throw new Error(`La réponse du modèle n'est pas du JSON valide. Réessaie avec une description plus courte. (détail: ${e.message})`);
   }
 }
