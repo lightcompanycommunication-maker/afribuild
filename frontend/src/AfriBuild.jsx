@@ -1730,6 +1730,7 @@ export default function App() {
     if((user?.credits||0)<ACTION_COST.generate){setNoCreditsFor({action:"generate",cost:ACTION_COST.generate});return;}
     setPhase("generating");setResult(null);setLiveCode(null);setError("");setTab("preview");setAgentLogs(null);setPreviewError(null);setFullstack(null);setAutoFixAttempts(0);
     try{
+      if(backend.enabled() && !backend.token){ await backend.auth(user.id,user.email); }
       const planModel=AI_MODELS.find(m=>m.id===selectedModel)?.model||AI_TIERS[planData?.ai||"balanced"]?.id||MODEL;
       const isFast=planModel.includes("haiku");
       const sys=isFast?HAIKU_SYSTEM_PROMPT:genMode==="fullstack"?FULLSTACK_SYSTEM_PROMPT:genMode==="mobile"?MOBILE_SYSTEM_PROMPT:SYSTEM_PROMPT;
