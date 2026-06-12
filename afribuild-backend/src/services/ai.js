@@ -1,37 +1,36 @@
 import { config } from "../config.js";
 
 /**
- * Génération de code via l'API OpenAI (GPT-4o), côté serveur.
- * La clé reste secrète ici ; le front n'appelle jamais OpenAI directement.
+ * Génération de code via l'API Anthropic (Claude), côté serveur.
+ * La clé reste secrète ici ; le front n'appelle jamais Anthropic directement.
  */
 
-const DEFAULT_MODEL = "gpt-4o";
+const DEFAULT_MODEL = "claude-opus-4-5";
 
 export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, model }) {
-  if (!config.openai.apiKey) throw new Error("OPENAI_KEY non configurée.");
+  if (!config.anthropic.apiKey) throw new Error("ANTHROPIC_API_KEY non configurée.");
 
-  const useModel = (typeof model === "string" && model.startsWith("gpt-")) ? model : DEFAULT_MODEL;
+  const useModel = (typeof model === "string" && model.startsWith("claude-")) ? model : DEFAULT_MODEL;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${config.openai.apiKey}`,
+      "x-api-key": config.anthropic.apiKey,
+      "anthropic-version": "2023-06-01",
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model: useModel,
       max_tokens: maxTokens,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: prompt },
-      ],
+      system: systemPrompt,
+      messages: [{ role: "user", content: prompt }],
     }),
   });
 
-  if (!res.ok) throw new Error(`OpenAI: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Anthropic: ${await res.text()}`);
 
   const data = await res.json();
-  const raw = data.choices?.[0]?.message?.content || "";
+  const raw = data.content?.map((b) => b.text || "").join("") || "";
   const clean = raw.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
   const match = clean.match(/\{[\s\S]*\}/);
   return JSON.parse(match ? match[0] : clean);
