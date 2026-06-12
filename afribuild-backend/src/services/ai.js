@@ -23,12 +23,11 @@ const MODEL_MAP = {
 export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, model }) {
   if (!config.anthropic.apiKey) throw new Error("ANTHROPIC_API_KEY non configurée.");
 
-  const resolved = MODEL_MAP[model] || (model?.startsWith("claude-") ? model : DEFAULT_MODEL);
-  const useModel = resolved;
-  const isHaiku = useModel.includes("haiku");
-  const safeMaxTokens = isHaiku ? Math.min(maxTokens, 4000) : maxTokens;
+  // Always use Haiku — fast, cost-effective, sufficient for app generation.
+  const useModel = DEFAULT_MODEL;
+  const safeMaxTokens = 4000;
 
-  console.log(`[AI] model=${useModel} maxTokens=${safeMaxTokens} (requested=${maxTokens})`);
+  console.log(`[AI] model=${useModel} maxTokens=${safeMaxTokens} (requested=${maxTokens}, original=${model})`);
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",

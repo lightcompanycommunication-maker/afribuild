@@ -1732,14 +1732,11 @@ export default function App() {
     setPhase("generating");setResult(null);setLiveCode(null);setError("");setTab("preview");setAgentLogs(null);setPreviewError(null);setFullstack(null);setAutoFixAttempts(0);
     try{
       if(backend.enabled() && !backend.token){ await backend.auth(user.id,user.email); }
-      const planModel=AI_MODELS.find(m=>m.id===selectedModel)?.model||AI_TIERS[planData?.ai||"balanced"]?.id||MODEL;
-      const isFast=planModel.includes("haiku");
-      const sys=isFast?HAIKU_SYSTEM_PROMPT:genMode==="fullstack"?FULLSTACK_SYSTEM_PROMPT:genMode==="mobile"?MOBILE_SYSTEM_PROMPT:SYSTEM_PROMPT;
+      const sys=genMode==="mobile"?MOBILE_SYSTEM_PROMPT:HAIKU_SYSTEM_PROMPT;
       const ctx=selectedAgent?`\n\nAGENT SPÉCIALISÉ: ${selectedAgent.systemPrompt}`:"";
       const africa=buildAfricaExpertContext(p);
       const mem=projectMemory?`\n\nMÉMOIRE DU PROJET (garde la cohérence):\n${projectMemory.summary||""}${(projectMemory.history||[]).slice(-3).map(h=>"\n- "+h).join("")}`:"";
-      const extras=isFast?"":ADMIN_PANEL_DIRECTIVE+BUSINESS_DIRECTIVE+RECEIPT_DIRECTIVE+VISUAL_DIRECTIVE+DOC_DIRECTIVE;
-      const raw=await callAI(planModel,sys,`${isFast?"Génère une app fonctionnelle et propre, code compact.":"Génère une app PROFESSIONNELLE indistinguable d’une équipe senior. Min 3 vues, données africaines denses, vraies interactions."}\n\n${p}${ctx}${africa}${mem}${extras}`,isFast?6000:genMode==="fullstack"?8000:7000);
+      const raw=await callAI(MODEL,sys,`Génère une app fonctionnelle et propre, code compact.\n\n${p}${ctx}${africa}${mem}`,4000);
       const clean=raw.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
       const parsed=JSON.parse(clean.match(/\{[\s\S]*\}/)?.[0]||clean);
       if(genMode==="fullstack"){if(!parsed.frontend)throw new Error("Pas de frontend généré.");setFullstack(parsed);parsed.code=parsed.frontend;}
