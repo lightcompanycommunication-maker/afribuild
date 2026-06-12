@@ -21,14 +21,13 @@ const KKIAPAY_KEY     = "TON_KKIAPAY_KEY";
 // URL de ton backend AfriBuild (déployé sur Railway/Render).
 // Laisse vide ("") pour le mode démo (tout marche, mais sans vrai APK ni vrai déploiement).
 // Une fois le backend hébergé, mets son URL ici : ex. "https://api.afribuild.app"
-const BACKEND_URL = ""; // Using Vite proxy — API calls to /api are forwarded to localhost:3001
+const BACKEND_URL = ""; // Empty = relative URLs via Vite proxy → localhost:3001
 
-// Client qui parle au backend. Si BACKEND_URL est vide, on bascule en mode démo.
+// Client qui parle au backend (backend toujours activé via le proxy Vite).
 const backend = {
-  enabled: () => !!BACKEND_URL,
+  enabled: () => true,
   token: null,
   async auth(userId, email) {
-    if (!BACKEND_URL) return null;
     try {
       const r = await fetch(`${BACKEND_URL}/api/auth/token`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ userId, email }) });
       const d = await r.json(); this.token = d.token; return d.token;

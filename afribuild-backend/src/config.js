@@ -13,7 +13,8 @@ export const config = {
   frontendOrigin: process.env.FRONTEND_ORIGIN || "*",
   jwtSecret: required("JWT_SECRET", "dev_secret_change_me"),
 
-  anthropic: { apiKey: required("ANTHROPIC_API_KEY") },
+  openai: { apiKey: required("OPENAI_KEY") },
+  anthropic: { apiKey: process.env.ANTHROPIC_API_KEY },
 
   expo: {
     token: required("EXPO_TOKEN"),
