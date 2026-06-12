@@ -13,8 +13,9 @@ export const config = {
   frontendOrigin: process.env.FRONTEND_ORIGIN || "*",
   jwtSecret: required("JWT_SECRET", "dev_secret_change_me"),
 
-  openai: { apiKey: required("OPENAI_KEY") },
-  anthropic: { apiKey: process.env.ANTHROPIC_API_KEY },
+  openai:   { apiKey: required("OPENAI_KEY") },
+  gemini:   { apiKey: required("GEMINI_KEY") },
+  anthropic:{ apiKey: process.env.ANTHROPIC_API_KEY },
 
   expo: {
     token: required("EXPO_TOKEN"),
@@ -34,9 +35,9 @@ export const config = {
   },
 
   payments: {
-    cinetpay: { apiKey: process.env.CINETPAY_API_KEY, siteId: process.env.CINETPAY_SITE_ID },
+    cinetpay:    { apiKey: process.env.CINETPAY_API_KEY, siteId: process.env.CINETPAY_SITE_ID },
     flutterwave: { secretKey: process.env.FLUTTERWAVE_SECRET_KEY },
-    kkiapay: { privateKey: process.env.KKIAPAY_PRIVATE_KEY, secret: process.env.KKIAPAY_SECRET },
+    kkiapay:     { privateKey: process.env.KKIAPAY_PRIVATE_KEY, secret: process.env.KKIAPAY_SECRET },
   },
 
   storage: { bucket: process.env.BUILD_STORAGE_BUCKET || "builds" },
