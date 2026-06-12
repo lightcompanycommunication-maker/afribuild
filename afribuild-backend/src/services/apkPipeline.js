@@ -113,7 +113,7 @@ RÈGLES STRICTES:
     method: "POST",
     headers: { "x-api-key": config.anthropic.apiKey, "anthropic-version": "2023-06-01", "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-5-20250929",
       max_tokens: 7000,
       system: sys,
       messages: [{ role: "user", content: `Problèmes détectés: ${issues.join("; ")}\n\nCode à corriger:\n${code}` }],

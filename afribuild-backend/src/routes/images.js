@@ -67,7 +67,7 @@ async function analyzeWithClaude(imageBase64) {
     method: "POST",
     headers: { "x-api-key": config.anthropic.apiKey, "anthropic-version": "2023-06-01", "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-5-20250929",
       max_tokens: 400,
       messages: [{
         role: "user",

@@ -5,12 +5,26 @@ import { config } from "../config.js";
  * La clé reste secrète ici ; le front n'appelle jamais Anthropic directement.
  */
 
-const DEFAULT_MODEL = "claude-opus-4-5";
+const DEFAULT_MODEL = "claude-sonnet-4-5-20250929";
+
+// Mapping de tous les anciens noms vers les modèles réellement disponibles
+const MODEL_MAP = {
+  "claude-sonnet-4-20250514":  "claude-sonnet-4-5-20250929",
+  "claude-opus-4-20250514":    "claude-opus-4-5-20251101",
+  "claude-haiku-4-5-20251001": "claude-haiku-4-5-20251001",
+  "claude-opus-4-5":           "claude-opus-4-5-20251101",
+  "claude-sonnet-4-5":         "claude-sonnet-4-5-20250929",
+  "claude-haiku-4-5":          "claude-haiku-4-5-20251001",
+  "claude-3-5-sonnet-20241022":"claude-sonnet-4-5-20250929",
+  "claude-3-5-haiku-20241022": "claude-haiku-4-5-20251001",
+  "claude-3-opus-20240229":    "claude-opus-4-5-20251101",
+};
 
 export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, model }) {
   if (!config.anthropic.apiKey) throw new Error("ANTHROPIC_API_KEY non configurée.");
 
-  const useModel = (typeof model === "string" && model.startsWith("claude-")) ? model : DEFAULT_MODEL;
+  const resolved = MODEL_MAP[model] || (model?.startsWith("claude-") ? model : DEFAULT_MODEL);
+  const useModel = resolved;
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
