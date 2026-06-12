@@ -25,6 +25,10 @@ export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, mode
 
   const resolved = MODEL_MAP[model] || (model?.startsWith("claude-") ? model : DEFAULT_MODEL);
   const useModel = resolved;
+  const isHaiku = useModel.includes("haiku");
+  const safeMaxTokens = isHaiku ? Math.min(maxTokens, 4000) : maxTokens;
+
+  console.log(`[AI] model=${useModel} maxTokens=${safeMaxTokens} (requested=${maxTokens})`);
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -35,7 +39,7 @@ export async function generateApp({ prompt, systemPrompt, maxTokens = 7000, mode
     },
     body: JSON.stringify({
       model: useModel,
-      max_tokens: maxTokens,
+      max_tokens: safeMaxTokens,
       system: systemPrompt,
       messages: [{ role: "user", content: prompt }],
     }),

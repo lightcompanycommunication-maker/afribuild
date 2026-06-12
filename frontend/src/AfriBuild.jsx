@@ -583,17 +583,18 @@ INTERDITS (signes d’IA): emojis dans titres, dégradés criards, border-radius
 OBLIGATOIRES (dev senior): sidebar navigation réelle, typo -apple-system hiérarchisée (28/20/15/13px), espacement multiples de 4px, données denses (10-15 entrées, vrais noms africains), palette limitée (1 primaire + grays), tables zebra + hover, formulaires avec focus states, monnaie formatée (1 450 000 FCFA), min 3 vues navigables.
 PALETTES: Fintech #0F172A+#22C55E | Santé #FFF+#0EA5E9 | Éducation #FFF+#7C3AED | Transport #FFF+#EA580C | Restaurant #1C1917+#EF4444 | Immobilier #FFF+#0891B2.`;
 
-const HAIKU_SYSTEM_PROMPT = `Tu es un développeur React senior. Tu génères des applications web fonctionnelles et propres.
+const HAIKU_SYSTEM_PROMPT = `Tu génères des micro-apps React en JSON strict.
 
-LOI ABSOLUE: JSON uniquement, zéro texte, zéro backtick en dehors du JSON.
-FORMAT: {"title","description","tagline","features":["..."],"stack":["..."],"africanContext","agentLogs":{"planner","design","frontend","backend","qa"},"code":"...JSX export default App"}
+LOI: JSON uniquement. Pas de texte avant ou après. Pas de backtick.
+FORMAT EXACT: {"title":"...","description":"...","features":["f1","f2","f3"],"stack":["React"],"code":"..."}
 
-RÈGLES:
-- Une seule vue principale bien faite (pas de router complexe, utilise useState pour la navigation)
-- Données réalistes (5-8 entrées max, prénoms africains)
-- Palette 2 couleurs max, styles inline uniquement
-- Code compact et lisible, pas de bibliothèques externes
-- Monnaie FCFA formatée`;
+RÈGLES STRICTES:
+- Le champ "code" contient uniquement: export default function App(){...} avec styles inline
+- Maximum 70 lignes de code (compact, pas de commentaires)
+- useState uniquement, pas de router externe
+- 3 à 5 entrées de données en dur (prénoms africains, montants FCFA)
+- 1 couleur primaire + blanc/gris uniquement
+- Aucune librairie externe dans le code généré`;
 
 
 
